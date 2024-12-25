@@ -37,7 +37,9 @@ item_list = actual_items['Наименование'].sort_values().to_list()
 train_end = '2024-11-30'
 forecast_start = '2024-12-01'
 forecast_end = '2025-01-31'
+# prediction_length = (pd.to_datetime(forecast_end) - pd.to_datetime(forecast_start)).days
 prediction_length = 2
+
 
 forecast_results = []
 
