@@ -15,6 +15,7 @@ current_stocks = pd.read_excel('data/finished_goods_stocks.xlsx')
 current_stocks['По дням'] = pd.to_datetime(current_stocks['По дням'], dayfirst=True)
 current_stocks.to_sql('current_stocks', con=engine, if_exists='replace', index=False)
 
+# %%
 # Обновление текущих продаж
 sales = pd.read_excel('data/sales.xlsx')
 sales['Дата'] = pd.to_datetime(sales['Дата'])
@@ -34,9 +35,9 @@ actual_items = pd.read_sql_query(
 )
 item_list = actual_items['Наименование'].sort_values().to_list()
 
-train_end = '2024-11-30'
-forecast_start = '2024-12-01'
-forecast_end = '2025-01-31'
+train_end = '2024-12-31'
+forecast_start = '2025-01-01'
+forecast_end = '2025-02-28'
 # prediction_length = (pd.to_datetime(forecast_end) - pd.to_datetime(forecast_start)).days
 prediction_length = 2
 
