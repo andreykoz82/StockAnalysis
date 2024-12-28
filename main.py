@@ -10,15 +10,18 @@ os.environ['CURL_CA_BUNDLE'] = ''
 # Подключение к базе данных
 engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
 
+# %%
 # Обновление текущих остатков НФП
 current_stocks = pd.read_excel('data/semifinished_stocks.xlsx')
 current_stocks.to_sql('semifinished_stocks', con=engine, if_exists='replace', index=False)
 
+# %%
 # Обновление текущих остатков готовой продукции
 current_stocks = pd.read_excel('data/finished_goods_stocks.xlsx')
 current_stocks['По дням'] = pd.to_datetime(current_stocks['По дням'], dayfirst=True)
 current_stocks.to_sql('current_stocks', con=engine, if_exists='replace', index=False)
 
+# %%
 # Обновление текущих продаж
 sales = pd.read_excel('data/sales.xlsx')
 sales['Дата'] = pd.to_datetime(sales['Дата'])
