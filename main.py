@@ -27,10 +27,12 @@ sales = pd.read_excel('data/sales.xlsx')
 sales['Дата'] = pd.to_datetime(sales['Дата'])
 sales.to_sql('sales', con=engine, if_exists='replace', index=False)
 
+# %%
 # Обновление текущей номенклатуры
 actual_items = pd.read_excel('data/actual_items.xlsx')
 actual_items.to_sql('actual_items', con=engine, if_exists='replace', index=False)
 
+# %%
 # Список актуальной номенклатуры
 actual_items = pd.read_sql_query(
     """
