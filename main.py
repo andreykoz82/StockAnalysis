@@ -32,6 +32,10 @@ actual_orders.to_sql('actual_orders', con=engine, if_exists='replace', index=Fal
 materials_current_stocks = pd.read_excel('data/materials_stocks.xlsx')
 materials_current_stocks.to_sql('materials_stocks', con=engine, if_exists='replace', index=False)
 
+# Обновление данных по выпуску ГП
+productio_2_stage = pd.read_excel('data/production_2_stage.xlsx')
+productio_2_stage.to_sql('production_2_stage', con=engine, if_exists='replace', index=False)
+
 # Обновление текущей номенклатуры
 actual_items = pd.read_excel('data/actual_items.xlsx')
 actual_items.to_sql('actual_items', con=engine, if_exists='replace', index=False)
