@@ -34,6 +34,7 @@ materials_current_stocks.to_sql('materials_stocks', con=engine, if_exists='repla
 
 # Обновление данных по выпуску ГП
 production_2_stage = pd.read_excel('data/production_2_stage.xlsx')
+production_2_stage['Период'] = pd.to_datetime(production_2_stage['Период'])
 production_2_stage.to_sql('production_2_stage', con=engine, if_exists='replace', index=False)
 
 # Обновление текущей номенклатуры
