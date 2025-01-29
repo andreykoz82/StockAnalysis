@@ -21,6 +21,7 @@ engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.16
 sales_by_item_sql = f"""
 SELECT "Дата", "Продажи"
 FROM public.sales
+WHERE "Дата" < '2025-01-31'
 """
 dataset = pd.read_sql_query(sales_by_item_sql, engine).set_index('Дата')
 dataset = dataset.groupby(pd.Grouper(freq='M')).sum()
