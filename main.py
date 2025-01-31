@@ -42,6 +42,9 @@ actual_items = pd.read_excel('data/actual_items.xlsx')
 actual_items.to_sql('actual_items', con=engine, if_exists='replace', index=False)
 
 # %%
+# Подключение к базе данных
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+
 # Список актуальной номенклатуры
 actual_items = pd.read_sql_query(
     """
@@ -52,9 +55,9 @@ actual_items = pd.read_sql_query(
 )
 item_list = actual_items['Наименование'].sort_values().to_list()
 
-train_end = '2024-11-30'
-forecast_start = '2024-12-01'
-forecast_end = '2024-12-31'
+train_end = '2025-01-31'
+forecast_start = '2025-02-01'
+forecast_end = '2025-02-28'
 # prediction_length = (pd.to_datetime(forecast_end) - pd.to_datetime(forecast_start)).days
 prediction_length = 1
 
