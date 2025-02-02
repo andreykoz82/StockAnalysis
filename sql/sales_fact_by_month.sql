@@ -5,7 +5,7 @@ SELECT
 FROM
     sales
 GROUP BY
-    DATE_TRUNC('month', Дата) + INTERVAL '1 month - 1 day',
+    DATE_TRUNC('month', Дата),
     Номенклатура
 ORDER BY
     Дата, Номенклатура;
