@@ -16,7 +16,7 @@ current_stocks.to_sql('semifinished_stocks', con=engine, if_exists='replace', in
 
 # Обновление текущих остатков готовой продукции
 current_stocks = pd.read_excel('data/finished_goods_stocks.xlsx')
-current_stocks['По дням'] = pd.to_datetime(current_stocks['По дням'], dayfirst=True)
+# current_stocks['По дням'] = pd.to_datetime(current_stocks['По дням'], dayfirst=True)
 current_stocks.to_sql('current_stocks', con=engine, if_exists='replace', index=False)
 
 # Обновление текущих продаж
