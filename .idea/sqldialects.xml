@@ -6,6 +6,7 @@
     <file url="file://$PROJECT_DIR$/sql/forecast_with_working_days.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/sql/remaining_stock.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/sql/sales_fact_by_month.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/sql/sales_forecast_by_prodline.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/sql/semi_finished_groupby.sql" dialect="PostgreSQL" />
   </component>
 </project>
