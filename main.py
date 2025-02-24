@@ -4,6 +4,9 @@ import pandas as pd
 from sqlalchemy import create_engine
 import timesfm
 import os
+import torch
+from chronos import BaseChronosPipeline
+
 warnings.filterwarnings('ignore')
 os.environ['CURL_CA_BUNDLE'] = ''
 
@@ -67,14 +70,14 @@ forecast_results = []
 sales_forecast = pd.DataFrame([{'ds':None, 'timesfm':None, 'item':None}])
 
 tfm = timesfm.TimesFm(
-        hparams=timesfm.TimesFmHparams(
-            backend="cpu",
-            per_core_batch_size=32,
-            horizon_len=prediction_length,
-        ),
-        checkpoint=timesfm.TimesFmCheckpoint(
-            huggingface_repo_id="google/timesfm-1.0-200m-pytorch"),
-    )
+      hparams=timesfm.TimesFmHparams(
+          backend="сpu",
+          per_core_batch_size=32,
+          horizon_len=prediction_length,
+      ),
+      checkpoint=timesfm.TimesFmCheckpoint(
+          huggingface_repo_id="google/timesfm-1.0-200m-pytorch"),
+  )
 
 for item in item_list:
     # Выгрузка данных по номенклатуре
@@ -100,9 +103,79 @@ for item in item_list:
         value_name="y",
         num_jobs=-1,
     )
+
     timesfm_forecast = timesfm_forecast[["ds","timesfm"]]
     timesfm_forecast['item'] = item
     sales_forecast = pd.concat([timesfm_forecast, sales_forecast], axis=0)
+# %%
+sales_forecast.to_excel('data/sales_forecast_v2.0.xlsx')
+# %%
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
 
+# %% AMAZON CHRONOS
+
+# Подключение к базе данных
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+
+# Список актуальной номенклатуры
+actual_items = pd.read_sql_query(
+    """
+    SELECT "Наименование"
+    FROM public.actual_items
+    """,
+    con=engine
+)
+item_list = actual_items['Наименование'].sort_values().to_list()
+
+train_end = '2025-01-31'
+forecast_start = '2025-02-01'
+forecast_end = '2025-12-31'
+prediction_length = 11
+date_range = pd.date_range(start=forecast_start, end=forecast_end, freq='M')
+
+forecast_results = []
+
+sales_forecast = pd.DataFrame([{'ds':None, 'timesfm':None, 'item':None}])
+
+pipeline = BaseChronosPipeline.from_pretrained(
+    "amazon/chronos-bolt-base",
+    device_map="cpu",
+    torch_dtype=torch.bfloat16,
+
+)
+
+for item in item_list:
+
+    # Выгрузка данных по номенклатуре
+    sales_by_item_sql = f"""
+    SELECT "Дата", "Продажи"
+    FROM public.sales
+    WHERE "Номенклатура" = '{item}'
+    """
+    sales_by_item = pd.read_sql_query(sales_by_item_sql, engine).set_index('Дата')
+
+    if sales_by_item.empty:
+        continue
+
+    train = sales_by_item[sales_by_item.index <= train_end].resample('M').sum()
+
+    df = pd.DataFrame({'unique_id': [1] * len(train),
+                       'ds': train.index,
+                       "y": train['Продажи']})
+
+    quantiles, mean = pipeline.predict_quantiles(
+        context=torch.tensor(df['y']),
+        prediction_length=prediction_length,
+        quantile_levels=[0.1, 0.5, 0.9],
+    )
+    low, median, high = quantiles[0, :, 0], quantiles[0, :, 1], quantiles[0, :, 2]
+
+    df_amazon = pd.DataFrame({'ds': date_range, "timesfm": median, 'item': item})
+
+    sales_forecast = pd.concat([df_amazon, sales_forecast], axis=0)
+# %%
+sales_forecast.to_excel('data/sales_forecast_amazon.xlsx')
+# %%
 engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
 sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
