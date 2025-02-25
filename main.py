@@ -6,7 +6,9 @@ import timesfm
 import os
 import torch
 from chronos import BaseChronosPipeline
+from nixtla import NixtlaClient
 
+# %%
 warnings.filterwarnings('ignore')
 os.environ['CURL_CA_BUNDLE'] = ''
 
@@ -176,6 +178,70 @@ for item in item_list:
     sales_forecast = pd.concat([df_amazon, sales_forecast], axis=0)
 # %%
 sales_forecast.to_excel('data/sales_forecast_amazon.xlsx')
+# %%
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
+
+# %% TIMEGPT
+
+# Подключение к базе данных
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+
+# Список актуальной номенклатуры
+actual_items = pd.read_sql_query(
+    """
+    SELECT "Наименование"
+    FROM public.actual_items
+    """,
+    con=engine
+)
+item_list = actual_items['Наименование'].sort_values().to_list()
+
+train_end = '2025-01-31'
+forecast_start = '2025-02-01'
+forecast_end = '2025-12-31'
+prediction_length = 11
+date_range = pd.date_range(start=forecast_start, end=forecast_end, freq='M')
+
+forecast_results = []
+
+sales_forecast = pd.DataFrame([{'ds':None, 'timesfm':None, 'item':None}])
+
+# API token TimeGPT
+nixtla_client = NixtlaClient(
+    api_key = 'nixak-aKPeLOieXpOAG4sy20UoDPB2IOJg4iIo9Cfw1uiHtK4T7DTLYS1ZOBsv1mo12HL66AMs7KRL9HDhd7fv'
+)
+
+for item in item_list:
+
+    # Выгрузка данных по номенклатуре
+    sales_by_item_sql = f"""
+    SELECT "Дата", "Продажи"
+    FROM public.sales
+    WHERE "Номенклатура" = '{item}'
+    """
+    sales_by_item = pd.read_sql_query(sales_by_item_sql, engine).set_index('Дата')
+
+    if sales_by_item.empty:
+        continue
+
+    train = sales_by_item[sales_by_item.index <= train_end].resample('M').sum()
+
+    df = pd.DataFrame({'unique_id': [1] * len(train),
+                       'ds': train.index,
+                       "y": train['Продажи']})
+
+    timegpt_fcst_df = nixtla_client.forecast(df=df,
+                                             model='timegpt-1-long-horizon',
+                                             h=prediction_length,
+                                             freq='ME',
+                                             time_col='ds', target_col='y')
+
+    df_timegpt = pd.DataFrame({'ds': timegpt_fcst_df['ds'], "timesfm": timegpt_fcst_df['TimeGPT'], 'item': item})
+
+    sales_forecast = pd.concat([df_timegpt, sales_forecast], axis=0)
+# %%
+sales_forecast.to_excel('data/sales_forecast_timegpt.xlsx')
 # %%
 engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
 sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
