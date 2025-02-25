@@ -207,7 +207,7 @@ forecast_results = []
 
 sales_forecast = pd.DataFrame([{'ds':None, 'timesfm':None, 'item':None}])
 
-# API token TimeGPT
+# API token TimeGPT до 27.03.2025
 nixtla_client = NixtlaClient(
     api_key = 'nixak-aKPeLOieXpOAG4sy20UoDPB2IOJg4iIo9Cfw1uiHtK4T7DTLYS1ZOBsv1mo12HL66AMs7KRL9HDhd7fv'
 )
