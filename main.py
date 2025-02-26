@@ -8,7 +8,6 @@ import torch
 from chronos import BaseChronosPipeline
 from nixtla import NixtlaClient
 
-# %%
 warnings.filterwarnings('ignore')
 os.environ['CURL_CA_BUNDLE'] = ''
 
