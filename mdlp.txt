@@ -3,3 +3,27 @@
 Идентификатор клиента: fd63ccf0-37bc-4d3f-8504-5cb3bcac589c
 Секретный код: 60eff793-f364-46dd-84ed-7242faa77dfc
 Идентификатор пользователя: a2517b25-f234-4eb5-aa50-75f3432cbbe1
+
+ЗАПРОС POWERSHELL
+------------------
+# Заголовки запроса
+$headers = @{
+    "Accept" = "application/json"
+    "Content-Type" = "application/json"
+}
+
+# Тело запроса
+$body = @{
+    "client_id" = "fd63ccf0-37bc-4d3f-8504-5cb3bcac589c"
+    "client_secret" = "60eff793-f364-46dd-84ed-7242faa77dfc"
+    "user_id" = "a2517b25-f234-4eb5-aa50-75f3432cbbe1"
+    "auth_type" = "SIGNED_CODE"
+} | ConvertTo-Json
+
+# Выполнение запроса
+try {
+    $response = Invoke-RestMethod -Uri "https://api.mdlp.crpt.ru/api/v1/auth" -Method Post -Headers $headers -Body $body
+    Write-Output "Ответ сервера: $response"
+} catch {
+    Write-Output "Ошибка: $_"
+}
