@@ -59,11 +59,11 @@ actual_items = pd.read_sql_query(
 )
 item_list = actual_items['Наименование'].sort_values().to_list()
 
-train_end = '2025-01-31'
-forecast_start = '2025-02-01'
+train_end = '2025-02-28'
+forecast_start = '2025-03-01'
 forecast_end = '2025-12-31'
 # prediction_length = (pd.to_datetime(forecast_end) - pd.to_datetime(forecast_start)).days
-prediction_length = 11
+prediction_length = 10
 
 
 forecast_results = []
@@ -109,7 +109,7 @@ for item in item_list:
     timesfm_forecast['item'] = item
     sales_forecast = pd.concat([timesfm_forecast, sales_forecast], axis=0)
 # %%
-sales_forecast.to_excel('data/sales_forecast_v2.0.xlsx')
+sales_forecast.to_excel('data/sales_forecast_03_12.xlsx')
 # %%
 engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
 sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
