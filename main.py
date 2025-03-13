@@ -244,3 +244,9 @@ sales_forecast.to_excel('data/sales_forecast_timegpt.xlsx')
 # %%
 engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
 sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
+# %% Загрузка плана продаж
+sales_forecast = pd.read_excel('data/sales_plan.xlsx')
+sales_forecast['ds'] = pd.to_datetime(sales_forecast['ds'])
+
+engine = create_engine('postgresql+psycopg2://gen_user:Body0906rock@93.183.81.166/stock_analysis')
+sales_forecast.to_sql('sales_forecast', con=engine, if_exists='append', index=False)
