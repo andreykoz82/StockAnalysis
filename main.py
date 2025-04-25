@@ -1,12 +1,14 @@
 # %%
-import warnings
-import pandas as pd
-from sqlalchemy import create_engine
-import timesfm
-import os
 import torch
 from chronos import BaseChronosPipeline
 from nixtla import NixtlaClient
+import timesfm
+# %%
+import warnings
+import pandas as pd
+from sqlalchemy import create_engine
+import os
+
 
 warnings.filterwarnings('ignore')
 os.environ['CURL_CA_BUNDLE'] = ''
