@@ -10,5 +10,6 @@
     <file url="file://$PROJECT_DIR$/sql/sales_forecast_by_prodline.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/sql/semi_finished_groupby.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/sql/stock_analysis.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/sql/stock_analysis_v2.sql" dialect="PostgreSQL" />
   </component>
 </project>
