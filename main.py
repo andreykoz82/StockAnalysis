@@ -41,3 +41,8 @@ production_2_stage.to_sql('production_2_stage', con=engine, if_exists='replace',
 # Обновление текущей номенклатуры
 actual_items = pd.read_excel('data/actual_items.xlsx')
 actual_items.to_sql('actual_items', con=engine, if_exists='replace', index=False)
+
+# %%
+# Обновление форкаста
+sales_forecast = pd.read_excel('data/sales_plan.xlsx')
+sales_forecast.to_sql("sales_forecast", con=engine, if_exists='append', index=False)
